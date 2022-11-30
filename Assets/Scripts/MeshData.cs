@@ -33,12 +33,37 @@ public class MeshData
     // Calculates surface normals for each vertex, according to face orientation
     public void CalculateNormals()
     {
-        // Your implementation
+        normals = new Vector3[vertices.Count];
+        for (int i = 0; i < triangles.Count; i+=3)
+        {
+            Vector3 vertex1 = vertices[triangles[i]];
+            Vector3 vertex2 = vertices[triangles[i+1]];
+            Vector3 vertex3 = vertices[triangles[i+2]];
+            Vector3 normal = Vector3.Cross(vertex1 - vertex3,vertex2 - vertex3).normalized;
+            normals[triangles[i]] += normal;
+            normals[triangles[i+1]] += normal;
+            normals[triangles[i+2]] += normal;
+        }
+
+        for (int j=0; j<normals.Length; j++)
+        {
+            normals[j] = normals[j].normalized;
+        }
     }
 
     // Edits mesh such that each face has a unique set of 3 vertices
     public void MakeFlatShaded()
     {
-        // Your implementation
+        HashSet<int> hashSet = new HashSet<int>();
+        for (int i = 0; i < triangles.Count; i++)
+        {
+            if (hashSet.Contains(triangles[i]))
+            {
+                Vector3 pos = vertices[triangles[i]]; 
+                triangles[i] = vertices.Count;
+                vertices.Add(pos);
+            }
+            hashSet.Add(triangles[i]);
+        }
     }
 }
